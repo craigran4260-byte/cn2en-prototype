@@ -3,399 +3,227 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CN2EN Keyboard — v2.5(评审整改版)</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>CN2EN v2.9 — 搜狗布局 × 朱砂配色</title>
 <style>
-  :root{
-    /* ═══ CN2EN tokens v1.0 「黑曜石上的朱砂」(brand/tokens.css) ═══ */
-    --ink-void:#07080a; --ink-surface:#101111;
-    --key-hi:#3f4249; --key-lo:#33363c;
-    --kb-bg:#212329; --kb-bg2:#1c1e23; --bar-line:#26282f;
-    --key:#3f4249; --key-active:#4a4d54; --rail:#36393f;
-    --fn:#2c2e33;
-    --sup:#a8aeba;                       /* 审计修复 4.6:1 */
-    --brand:#e0453a; --cinnabar-glow:rgba(224,69,58,.32);
-    --blue:#5aa0ff; --green:#4ad295;     /* 青瓷 */
-    --red-strong:#ff8a80; --porcelain:#f4f5f7; --mist:#a8aeba; --icon:#d6d9df;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'Inter','PingFang SC',sans-serif;}
-  body{background:#07080b;color:#f2f3f7;padding:30px 20px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;}
-  h1{font-size:19px;font-weight:600;} h1 em{font-style:normal;color:var(--brand);}
-  .sub{color:#8b91a3;font-size:12.5px;}
-  .sub b{color:#c9cdd9;}
-  .stage{display:flex;gap:42px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
-  /* 控制台 */
-  .console{width:284px;display:flex;flex-direction:column;gap:14px;position:sticky;top:30px;}
-  .card{background:#15171e;border:1px solid #262a36;border-radius:14px;padding:15px;}
-  .card h2{font-size:11px;font-weight:600;color:#8b91a3;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
-  .stbtn{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:transparent;border:1px solid #262a36;color:#c9cdd9;padding:9px 11px;border-radius:9px;margin-bottom:6px;cursor:pointer;font-size:12.5px;font-weight:500;}
-  .stbtn:hover{border-color:#3a4054;} .stbtn.on{border-color:rgba(90,160,255,.55);background:rgba(90,160,255,.1);color:#fff;}
-  .stbtn b{font-family:'Geist Mono',monospace;font-size:10.5px;color:#5d6377;} .stbtn.on b{color:var(--blue);}
-  .note{font-size:11.5px;color:#8b91a3;line-height:1.75;} .note b{color:#c9cdd9;}
-  .fixtag{display:inline-block;background:rgba(95,206,143,.15);color:var(--green);font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:5px;margin-left:5px;vertical-align:1px;}
-  /* 手机 */
-  .phone{width:392px;background:#000;border-radius:56px;padding:11px;box-shadow:0 30px 80px rgba(0,0,0,.75);}
-  .screen{background:#08090d;border-radius:46px;overflow:hidden;height:852px;display:flex;flex-direction:column;}
-  .notch{width:118px;height:32px;background:#000;border-radius:18px;margin:9px auto 0;}
-  .chat{flex:1;padding:12px 16px 6px;display:flex;flex-direction:column;min-height:0;}
-  .time{text-align:center;color:#4d5265;font-size:10.5px;margin:2px 0 10px;}
-  .msg{max-width:80%;padding:9px 13px;border-radius:16px;font-size:13.5px;line-height:1.5;margin-bottom:8px;}
-  .them{background:#1e212b;color:#dfe2ea;border-bottom-left-radius:5px;align-self:flex-start;}
-  .me{background:#2f5bd7;color:#fff;border-bottom-right-radius:5px;align-self:flex-end;}
-  .me .sys{display:inline-block;font-family:'Geist Mono',monospace;font-size:9px;color:#a9c4ff;margin-left:7px;}
-  .me.g .sys{color:#9fe8bd;}
-  .inputbar{margin:5px 14px 6px;background:#171922;border:1px solid #232631;border-radius:10px;padding:10px 14px;color:#565b6e;font-size:14px;display:flex;justify-content:space-between;align-items:center;}
-  .apptool{display:flex;justify-content:space-around;align-items:center;padding:8px 18px 6px;background:#0d0e13;}
-  .apptool span{color:#a6abb8;font-size:16px;line-height:1;}
-  /* ═══ 键盘 ═══ */
-  .kbd{background:var(--kb-bg);padding:0 0 20px;position:relative;}
-  .comp{flex:1;display:flex;align-items:center;padding:0 4px 0 11px;min-width:0;}
-  .comp .txt{font-size:14px;color:#e8eaee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .comp .txt.ghost{color:#8d93a0;display:flex;align-items:center;gap:8px;}
-  .comp .txt.en{color:var(--green);}
-  .cand{width:106px;border-left:1px solid var(--bar-line);display:flex;flex-direction:column;justify-content:center;padding-left:10px;gap:1px;cursor:pointer;}
-  .cand .c2{font-size:9px;color:#8d93a0;display:flex;align-items:center;gap:3px;}
-  .cand .c2 .tick{color:var(--brand);font-weight:700;font-size:10px;}
-  .cand .c1{font-size:12.5px;color:#e8eaee;font-weight:600;}
-  .cand.reconvert{opacity:.75;}
-  .cand.reconvert .c1{color:var(--blue);}
-  .spinner{width:12px;height:12px;border:2px solid var(--blue);border-top-color:transparent;border-radius:50%;animation:rot .8s linear infinite;flex-shrink:0;}
-  @keyframes rot{to{transform:rotate(360deg)}}
-  /* H2: 工具条 图标+首用标签, 热区44 */
-  .stool{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 5px;}
-  .sico{min-width:44px;height:44px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;transition:.12s;position:relative;}
-  .sico:hover{background:rgba(255,255,255,.06);}
-  .sico svg{width:21px;height:21px;stroke:var(--icon);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
-  .sico .lb{font-size:8.5px;color:#8d93a0;font-weight:600;letter-spacing:.3px;}
-  .sico.hot::after{content:'';position:absolute;top:4px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--brand);}
-  .slogo{background:linear-gradient(160deg,#e0453a,#c53a30);box-shadow:0 2px 6px rgba(224,69,58,.35);}
-  .slogo:hover{background:linear-gradient(160deg,#e0453a,#c53a30);}
-  .slogo span{color:#fff;font-size:12px;font-weight:700;letter-spacing:-.5px;}
-  .slogo .lb{color:rgba(255,255,255,.85);}
-  /* 品牌 logo(摆渡人)用在 slogo 位: 白描弧线小徽 */
-  .slogo.boat span.bl{font-size:15px;line-height:1;}
-  .sico.rec{background:rgba(224,69,58,.16);animation:pulse 1.2s infinite;}
-  .sico.rec svg{stroke:var(--red-strong);}
-  @keyframes pulse{0%,100%{background:rgba(224,69,58,.16)}50%{background:rgba(224,69,58,.32)}}
-  /* 键区 H1: 所有键≥44pt; 中英键单击循环 */
-  .keys{padding:4px 4px 0;}
-  .g-t9{display:grid;grid-template-columns:0.62fr 1fr 1fr 1fr 0.82fr;grid-template-rows:repeat(4,46px);gap:6px;}
-  .k{border-radius:7px;background:var(--key);display:flex;align-items:center;justify-content:center;position:relative;
-    color:#f2f3f7;font-size:16.5px;font-weight:400;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.5);transition:background .1s;user-select:none;}
-  .k:active{background:var(--key-active);}
-  .k.dbl{flex-direction:column;gap:0;line-height:1.02;}
-  .k.dbl i{font-style:normal;font-size:13.5px;}
-  .k.dbl small{font-size:9px;color:var(--sup);letter-spacing:.3px;}
-  .k.rail{background:var(--rail);font-size:14px;}
-  .k.punc{background:var(--rail);font-size:15px;}
-  .k.fn{background:var(--fn);color:#d5d8de;font-size:12.5px;font-weight:500;}
-  .k.sp{gap:7px;font-size:14px;}
-  .k.sp svg{width:16px;height:16px;stroke:#b6bac3;fill:none;stroke-width:1.5;stroke-linecap:round;}
-  .k.cyc{font-size:14px;font-weight:600;}
-  .k.cyc .alt{display:block;font-size:8.5px;color:var(--sup);font-weight:500;margin-top:1px;}
-  .k.send{background:var(--fn);color:#d5d8de;}
-  .minibar{display:flex;gap:6px;margin:5px 4px 0;}
-  .minibar .mb{flex:1;height:44px;border-radius:8px;background:var(--fn);color:#d5d8de;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.4);}
-  .minibar .mb:active{background:#3c3e44;}
-  .minibar .mb.red{color:var(--red-strong);}
-  /* M4: 状态过渡动效 */
-  .comp .txt{transition:opacity .18s ease;}
-  .fade-swap{animation:fadeSwap .2s ease;}
-  @keyframes fadeSwap{0%{opacity:0}100%{opacity:1}}
-  .minibar{animation:slideIn .16s ease;}
-  @keyframes slideIn{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:none}}
-  @media (prefers-reduced-motion:reduce){.comp .txt,.minibar{animation:none!important;transition:none!important}}
-  /* 弹层 */
-  .popover{position:absolute;left:8px;top:92px;width:302px;background:#26282f;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.5);padding:14px;z-index:20;}
-  /* v2.8: 无损切换 — 英文预览条 + 放入/返回键 */
-.preview-bar{display:flex;align-items:center;gap:8px;margin:6px 8px 0;padding:7px 10px;border-radius:10px;
-  background:rgba(74,210,149,.10);border:1px solid rgba(74,210,149,.25);}
-.preview-bar .pflag{font-size:9px;font-weight:700;color:var(--green);background:rgba(74,210,149,.15);padding:2px 6px;border-radius:5px;flex-shrink:0;}
-.preview-bar .ptxt{flex:1;font-size:12.5px;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.preview-bar .drop{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#0a0b0c;
-  background:var(--green);padding:6px 12px;border-radius:8px;min-height:28px;flex-shrink:0;}
-.preview-bar .drop:active{filter:brightness(.85);}
-.preview-bar .drop.return{background:var(--blue);color:#fff;}
-.popover h3{font-size:10.5px;color:#8b91a3;letter-spacing:.5px;margin-bottom:8px;font-weight:600;}
-  .pop-chips{display:flex;gap:6px;margin-bottom:12px;}
-  .pop-chip{flex:1;text-align:center;padding:9px 0;border-radius:8px;background:#33353b;color:#cfd2d9;font-size:11.5px;font-weight:600;cursor:pointer;}
-  .pop-chip.on{background:var(--brand);color:#fff;}
-  .pop-tone{display:flex;gap:8px;align-items:center;}
-  .pop-tone .lab{font-size:10.5px;color:#8b91a3;}
-  .tones{display:flex;gap:6px;flex:1;}
-  .tone{flex:1;height:34px;border-radius:8px;background:#33353b;color:#cfd2d9;font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .tone.on{background:var(--blue);color:#fff;}
-  .hidden{display:none!important;}
-  /* QWERTY */
-  .q10{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;}
-  .q9{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin:0 17px;}
-  .q7{display:grid;grid-template-columns:1.45fr repeat(7,1fr) 1.45fr;gap:6px;}
-  .q4{display:grid;grid-template-columns:0.9fr 0.8fr 2fr 0.9fr 1.1fr;gap:6px;}
-  .q10 .k,.q9 .k,.q7 .k{height:46px;font-size:14.5px;}
+:root{--void:#07080a;--surface:#101111;--kb:#212329;--key:#3f4249;--fn:#33363c;--zhu:#e0453a;--ci:#4ad295;--mist:#a8aeba;--txt:#f4f5f7}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'PingFang SC','Inter',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#000;padding:30px;display:flex;gap:36px;flex-wrap:wrap}
+.phone{width:390px;flex-shrink:0}
+.ptitle{color:var(--mist);font-size:13px;text-align:center;margin-bottom:10px}
+.screen{width:390px;height:800px;background:var(--void);border-radius:26px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+/* ── App 区(仿真Messenger) ── */
+.chatpad{flex:1;padding-top:30px}
+.bubble{margin:0 16px 10px;align-self:flex-start;max-width:240px;background:#2c2e33;color:var(--txt);font-size:14px;padding:8px 12px;border-radius:16px 16px 16px 4px;width:max-content}
+.appbar{display:flex;align-items:center;gap:10px;padding:10px 12px 14px}
+.aarrow{color:#0a84ff;font-size:20px;width:24px}
+.afield{flex:1;background:#1c1e22;border:1px solid #2c2e33;border-radius:21px;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.afield .ph{color:#7d838d;font-size:15px}
+.afield .en{color:var(--ci);font-size:15px}
+.afield .caret{display:inline-block;width:2px;height:17px;background:var(--ci);margin-left:1px}
+.asend{width:38px;height:38px;border-radius:50%;background:#0a84ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px}
+.acam{color:#0a84ff;font-size:22px}
+/* ── 键盘通用 ── */
+.kb{background:var(--kb);position:relative;padding:6px 4px 16px}
+.mascot{position:absolute;top:-14px;right:10px;width:30px;height:30px;border-radius:50%;background:var(--void);border:2px solid var(--kb);display:flex;align-items:center;justify-content:center;font-size:13px}
+/* 翻译条 */
+.tbar{display:flex;align-items:center;gap:8px;padding:8px 10px 6px}
+.pill{background:var(--zhu);color:#fff;font-size:12px;font-weight:600;padding:5px 9px;border-radius:15px;white-space:nowrap;display:flex;align-items:center;gap:3px}
+.tfield{flex:1;background:var(--surface);border-radius:9px;padding:8px 11px;font-size:14px;color:var(--txt);display:flex;align-items:center;min-height:34px}
+.tfield.ph{color:var(--mist)}
+.tconfirm{color:var(--zhu);font-size:15px;font-weight:600;padding:0 2px}
+.tcancel{color:var(--txt);font-size:15px;padding:0 2px}
+/* 工具条 */
+.toolbar{display:flex;justify-content:space-between;align-items:center;padding:4px 8px 6px}
+.tico{width:38px;height:38px;border-radius:50%;background:#2c2e33;display:flex;align-items:center;justify-content:center;color:var(--txt);font-size:15px}
+.tico.logo{background:var(--zhu);color:#fff;font-weight:700}
+.tico.tactive{background:#2c2e33;color:var(--zhu);position:relative}
+.tico.tactive::after{content:'✓';position:absolute;bottom:-2px;right:-2px;background:var(--zhu);color:#fff;font-size:8px;width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+/* 候选条 */
+.cands{display:flex;align-items:center;gap:6px;padding:2px 8px 6px;overflow:hidden}
+.cand{color:var(--txt);font-size:16px;padding:6px 10px;border-radius:8px;white-space:nowrap}
+.cand.hl{background:#2c2e33}
+.cand.more{color:var(--mist)}
+/* 九宫格 */
+.grid9{display:grid;grid-template-columns:0.6fr 1fr 1fr 1fr 0.82fr;gap:5px;padding:0 2px}
+.k{background:var(--key);border-radius:7px;height:47px;display:flex;align-items:center;justify-content:center;color:var(--txt);font-size:16px;position:relative;box-shadow:0 1px 0 rgba(0,0,0,.5)}
+.k small{position:absolute;top:3px;right:6px;font-size:9px;color:var(--mist)}
+.k.punc{background:transparent;box-shadow:none;font-size:18px}
+.k.fn{background:var(--fn);font-size:13px}
+.k.del{font-size:17px}
+.k.sp{flex-direction:row;gap:6px;color:var(--mist);font-size:13px}
+.rowb{display:grid;grid-template-columns:1fr 1fr 2.6fr 1fr 1fr;gap:5px;margin-top:5px;padding:0 2px}
+/* QWERTY */
+.qw{padding:0 2px}
+.qrow{display:grid;gap:4px;margin-bottom:6px}
+.q1{grid-template-columns:repeat(10,1fr)}
+.q2{grid-template-columns:repeat(10,1fr);padding:0 14px}
+.q3{grid-template-columns:1.3fr repeat(7,1fr) 1.3fr}
+.qk{background:var(--key);border-radius:6px;height:42px;display:flex;align-items:center;justify-content:center;color:var(--txt);font-size:16px;position:relative}
+.qk small{position:absolute;top:2px;right:4px;font-size:8px;color:var(--mist)}
+.qk.sh{background:var(--fn);font-size:13px}
+/* 语种面板 */
+.lang{position:absolute;left:0;right:0;bottom:0;background:#2a2c31;border-radius:14px 14px 0 0;z-index:9;padding-bottom:60px}
+.lhead{display:flex;justify-content:space-between;align-items:center;padding:13px 14px}
+.lhead b{color:var(--txt);font-size:16px}
+.lhead .done{color:var(--zhu);font-size:15px}
+.lrow{padding:13px 14px;border-top:1px solid #383b41;color:var(--txt);font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.lrow small{display:block;color:var(--mist);font-size:11px;margin-top:2px}
+.lrow .ck{color:var(--zhu);font-weight:700}
+.hidden{display:none!important}
+[data-state]:not(.on){display:none}
 </style>
 </head>
 <body>
-<h1>CN2EN <em>Keyboard</em> · v2.5 — 评审整改版</h1>
-<div class="sub">v2.8:无损切换(中文永不离开输入框;EN预览条;放入↔换回单键往返) · v2.7:配置收后台 · 已修复:<b>H1</b> 触控热区44pt <b>H2</b> 转换键首用标签 <b>H3</b> 对比度 <b>M1</b> 超时/ASR失败态 <b>M2</b> 场景pill常驻 <b>M3</b> 双入口分工 <b>M4</b> 动效 <b>P2</b> 三档+去冗余图标</div>
 
-<div class="stage">
-  <div class="phone"><div class="screen"><div class="notch"></div>
-    <div class="chat">
-      <div class="time">Today 10:42</div>
-      <div class="msg them">Hey! Are we still on for lunch tomorrow? 🍜</div>
-      <div class="msg them">Sure! What time works for you?</div>
-      <div class="msg me">12:30 works. See you at the ramen place!</div>
-      <div id="lastMsg" class="hidden"></div>
+<!-- ═══ 1 正常九键(待机) ═══ -->
+<div class="phone"><div class="ptitle">01 正常九键 · 待机</div>
+<div class="screen" id="s-t9">
+  <div class="chatpad"><div class="bubble">Hi sir</div></div>
+  <div class="appbar"><span class="aarrow">❯</span><div class="afield"><span class="ph">Aa</span></div><span class="acam">☺</span></div>
+  <div class="kb"><div class="mascot">渡</div>
+    <div class="toolbar">
+      <div class="tico logo">渡</div><div class="tico">☺⁺</div><div class="tico">🎤</div><div class="tico">⌨</div>
+      <div class="tico" onclick="go('tr')">文A</div><div class="tico">🔍</div><div class="tico">⌄</div>
     </div>
-    <div class="inputbar"><span>发送给 Hazeboi</span><span style="color:#565b6e">⤢</span></div>
-    <div class="apptool">
-      <span>☺</span><span>@</span><span>🎤</span><span>🖼</span><span style="font-size:13px;font-weight:600">Aa</span><span>＋</span>
+    <div class="grid9">
+      <div class="k punc">,</div><div class="k">@/.<small>1</small></div><div class="k">ABC<small>2</small></div><div class="k">DEF<small>3</small></div><div class="k fn del">⌫</div>
+      <div class="k punc">。</div><div class="k">GHI<small>4</small></div><div class="k">JKL<small>5</small></div><div class="k">MNO<small>6</small></div><div class="k fn">重输</div>
+      <div class="k punc">?</div><div class="k">PQRS<small>7</small></div><div class="k">TUV<small>8</small></div><div class="k">WXYZ<small>9</small></div><div class="k">0</div>
+      <div class="k punc">!</div>
     </div>
-    <div class="kbd">
-      <!-- H2/M3: 工具条 带标签(首用) -->
-      <div class="stool">
-        <div class="sico slogo boat" id="logoBtn" role="button" aria-label="CN2EN 设置:场景/语气/输入模式" title="设置">
-          <!-- 品牌:摆渡人小徽(app-c3 白描版) -->
-          <span class="bl"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round"><path d="M4.6 10.9c1.9-4 4.3-6 7.4-6 3.1 0 5.5 2 7.4 6"/><path d="M4.6 13.1c1.9 4 4.3 6 7.4 6 3.1 0 5.5-2 7.4-6"/></svg></span>
-          <span class="lb">设置</span>
-        </div>
-        <div class="sico" role="button" aria-label="语音输入" title="语音转英文"><svg viewBox="0 0 24 24"><rect x="9.6" y="4.2" width="4.8" height="9.6" rx="2.4"/><path d="M6.2 11.4a5.8 5.8 0 0 0 11.6 0M12 17.2v2.4"/></svg><span class="lb">语音</span></div>
-        <div class="sico" id="layoutBtn" role="button" aria-label="切换九宫格或全键盘" title="九宫格/全键盘"><svg viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2.2"/><path d="M7 9.5h.8M10.5 9.5h.8M14 9.5h.8M17.5 9.5h.8M7 12h.8M10.5 12h.8M14 12h.8M17.5 12h.8M8.5 14.6h7"/></svg><span class="lb">键盘</span></div>
-        <div class="sico hot" id="convBtn" role="button" aria-label="将整段中文转换成英文" title="整段转成英文">
-          <!-- 品牌 icon:朱砂渡(brand/icons/convert-a-chu-Sand-Ferry.svg 内联) -->
-          <svg viewBox="0 0 24 24"><path d="M3.2 16.8c2.6-6.2 5.4-9.4 8.6-9.4 2.1 0 3.2 1.4 3.2 3.6"/><path d="M12.4 7.9h3.4v3.4"/><path d="M20.8 7.2c-2.6 6.2-5.4 9.4-8.6 9.4-2.1 0-3.2-1.4-3.2-3.6"/><path d="M11.6 16.1H8.2v-3.4"/></svg><span class="lb" id="convLbl" style="color:var(--brand)">转英文</span>
-        </div>
-        <div class="sico" role="button" aria-label="收起键盘" title="收起"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg><span class="lb">收起</span></div>
-      </div>
-      <!-- v2.7: 编辑条=纯输入展示(档位/模式入设置) -->
-      <div class="compbar">
-        <div class="comp"><div class="txt" id="compTxt">明天中午还是老地方吃面吗 我十二点半到你那边</div></div>
-        <div class="cand" id="convCand" role="button" aria-label="转成英文(主入口)" title="转成英文(主入口)">
-          <div class="c2"><span class="tick">文→A</span> 主入口</div>
-          <div class="c1" id="candLbl">转成英文</div>
-        </div>
-      </div>
-      <div class="preview-bar hidden" id="prevBar" aria-live="polite">
-        <span class="pflag">EN</span>
-        <span class="ptxt" id="prevTxt"></span>
-        <div class="drop" id="dropBtn" role="button" aria-label="放入英文或换回中文">⤓ 放入</div>
-      </div>
-      <div class="keys"><div id="kbdArea"></div>
-        <div class="minibar hidden" id="minibar">
-          <div class="mb red" id="mbCn">↺ 回中文</div>
-          <div class="mb" id="mbFormal">再正式点</div>
-          <div class="mb" id="mbCasual">更随意些</div>
-        </div>
-      </div>
-      <div class="popover hidden" id="popover">
-        <h3>场景</h3>
-        <div class="pop-chips" id="popChips">
-          <div class="pop-chip on">💬 闲聊</div><div class="pop-chip">💼 商务</div><div class="pop-chip">📋 邮件</div><div class="pop-chip">⚡ 催单</div>
-        </div>
-        <h3>语气(P2: 收敛为三档)</h3>
-        <div class="pop-tone"><span class="lab">正式</span>
-          <div class="tones" id="tones"><div class="tone">正式</div><div class="tone on">平衡</div><div class="tone">口语</div></div>
-          <span class="lab">口语</span>
-        </div>
-        <h3>输入模式(低频,也可在 App 后台改)</h3>
-        <div class="tones" id="modes"><div class="tone on">中文→英文</div><div class="tone">纯英文</div></div>
-      </div>
-    </div>
-  </div></div>
+    <div class="rowb"><div class="k fn">符</div><div class="k fn">123</div><div class="k sp">🎤 空格</div><div class="k fn">中英</div><div class="k fn">换行</div></div>
+  </div>
+</div></div>
 
-  <div class="console">
-    <div class="card">
-      <h2>状态机(六态)</h2>
-      <button class="stbtn on" data-s="typing"><b>01</b> 打字态</button>
-      <button class="stbtn" data-s="converting"><b>02</b> 转换态</button>
-      <button class="stbtn" data-s="done"><b>03</b> 预览态(EN在条上)</button>
-      <button class="stbtn" data-s="enboxed"><b>03b</b> 放入态(键变↩)</button>
-      <button class="stbtn" data-s="timeout"><b>04</b> 超时降级<span class="fixtag">M1</span></button>
-      <button class="stbtn" data-s="asr"><b>05</b> 语音识别失败<span class="fixtag">M1</span></button>
-      <button class="stbtn" data-s="fail"><b>06</b> 网络失败(保留中文)</button>
+<!-- ═══ 2 翻译模式·空(九键) ═══ -->
+<div class="phone"><div class="ptitle">02 翻译模式 · 空(九键)</div>
+<div class="screen" id="s-tr">
+  <div class="chatpad"><div class="bubble">Hi sir</div></div>
+  <div class="appbar"><span class="aarrow">❯</span><div class="afield"><span class="ph">Aa</span></div><span class="acam">☺</span></div>
+  <div class="kb"><div class="mascot">渡</div>
+    <div class="tbar"><span class="pill">中⇄英 ▾</span><div class="tfield ph">输入要翻译的中/英文</div><span class="tconfirm" style="color:var(--mist)">文A</span><span class="tcancel" onclick="go('t9')">取消</span></div>
+    <div class="toolbar">
+      <div class="tico logo">渡</div><div class="tico">☺⁺</div><div class="tico">🎤</div><div class="tico">⌨</div>
+      <div class="tico tactive" onclick="go('t9')">文A</div><div class="tico">🔍</div><div class="tico">⌄</div>
     </div>
-    <div class="card">
-      <h2>整改对照</h2>
-      <div class="note">
-        <b>v2.8</b> 无损切换:转换不打断原文,放入后一键换回(仿HelloTalk;超出:换档重转/minibar仍在)<br><b>H1</b> 全键盘≥44pt;配置收后台<br>
-        <b>H2</b> 工具条带文字标签(首用3次后可收)<br>
-        <b>H3</b> 角标 #b6bac3 = 4.6:1 ✓ minibar 红字提亮<br>
-        <b>v2.7</b> 编辑条=纯输入展示;档位/中英模式收进设置(低频后台化)<br>
-        <b>M3</b> 候选条=主入口;结果态变为"换档重转"<br>
-        <b>M4</b> 文本交叉淡入200ms + minibar slide-in<br>
-        <b>P2</b> 语气收敛三档;去掉搜索/贴纸冗余图标
-      </div>
+    <div class="grid9">
+      <div class="k punc">,</div><div class="k">@/.<small>1</small></div><div class="k">ABC<small>2</small></div><div class="k">DEF<small>3</small></div><div class="k fn del">⌫</div>
+      <div class="k punc">。</div><div class="k">GHI<small>4</small></div><div class="k">JKL<small>5</small></div><div class="k">MNO<small>6</small></div><div class="k fn">重输</div>
+      <div class="k punc">?</div><div class="k">PQRS<small>7</small></div><div class="k">TUV<small>8</small></div><div class="k">WXYZ<small>9</small></div><div class="k">0</div>
+      <div class="k punc">!</div>
+    </div>
+    <div class="rowb"><div class="k fn">符</div><div class="k fn">123</div><div class="k sp">🎤 空格</div><div class="k fn">中英</div><div class="k fn">换行</div></div>
+  </div>
+</div></div>
+
+<!-- ═══ 3 翻译模式·已输入+确定 ═══ -->
+<div class="phone"><div class="ptitle">03 已输入原文 · 确定前</div>
+<div class="screen" id="s-ty">
+  <div class="chatpad"><div class="bubble">Hi sir</div></div>
+  <div class="appbar"><span class="aarrow">❯</span><div class="afield"><span class="ph">Aa</span></div><span class="acam">☺</span></div>
+  <div class="kb"><div class="mascot">渡</div>
+    <div class="tbar"><span class="pill" onclick="go('lg')">中⇄英 ▾</span><div class="tfield">真的是</div><span class="tcancel" style="font-size:13px">✕</span><span class="tconfirm" onclick="go('res')">确定</span></div>
+    <div class="cands"><span class="cand">个</span><span class="cand">我</span><span class="cand hl">☺ 真的是</span><span class="cand">哈哈哈</span><span class="cand">你</span><span class="cand more">✕</span></div>
+    <div class="grid9">
+      <div class="k punc">,</div><div class="k">@/.<small>1</small></div><div class="k">ABC<small>2</small></div><div class="k">DEF<small>3</small></div><div class="k fn del">⌫</div>
+      <div class="k punc">。</div><div class="k">GHI<small>4</small></div><div class="k">JKL<small>5</small></div><div class="k">MNO<small>6</small></div><div class="k fn">重输</div>
+      <div class="k punc">?</div><div class="k">PQRS<small>7</small></div><div class="k">TUV<small>8</small></div><div class="k">WXYZ<small>9</small></div><div class="k">0</div>
+      <div class="k punc">!</div>
+    </div>
+    <div class="rowb"><div class="k fn">符</div><div class="k fn">123</div><div class="k sp">🎤 空格</div><div class="k fn">中英</div><div class="k fn">换行</div></div>
+  </div>
+</div></div>
+
+<!-- ═══ 4 译文已落地App输入框 ═══ -->
+<div class="phone"><div class="ptitle">04 确定 · 译文进输入框</div>
+<div class="screen" id="s-res">
+  <div class="chatpad"><div class="bubble">Hi sir</div></div>
+  <div class="appbar"><span class="aarrow">❯</span><div class="afield"><span class="en">Really?<span class="caret"></span></span></div><span class="asend">➤</span></div>
+  <div class="kb"><div class="mascot">渡</div>
+    <div class="tbar"><span class="pill" onclick="go('lg')">中⇄英 ▾</span><div class="tfield">真的是</div><span class="tcancel" style="font-size:13px">✕</span><span class="tconfirm">确定</span></div>
+    <div class="toolbar">
+      <div class="tico logo">渡</div><div class="tico">☺⁺</div><div class="tico">🎤</div><div class="tico">⌨</div>
+      <div class="tico tactive" onclick="go('t9')">文A</div><div class="tico">🔍</div><div class="tico">⌄</div>
+    </div>
+    <div class="grid9">
+      <div class="k punc">,</div><div class="k">@/.<small>1</small></div><div class="k">ABC<small>2</small></div><div class="k">DEF<small>3</small></div><div class="k fn del">⌫</div>
+      <div class="k punc">。</div><div class="k">GHI<small>4</small></div><div class="k">JKL<small>5</small></div><div class="k">MNO<small>6</small></div><div class="k fn">重输</div>
+      <div class="k punc">?</div><div class="k">PQRS<small>7</small></div><div class="k">TUV<small>8</small></div><div class="k">WXYZ<small>9</small></div><div class="k">0</div>
+      <div class="k punc">!</div>
+    </div>
+    <div class="rowb"><div class="k fn">符</div><div class="k fn">123</div><div class="k sp">🎤 空格</div><div class="k fn">中英</div><div class="k fn">换行</div></div>
+  </div>
+</div></div>
+
+<!-- ═══ 5 语种选择面板 ═══ -->
+<div class="phone"><div class="ptitle">05 语种选择面板</div>
+<div class="screen" id="s-lg">
+  <div class="chatpad"><div class="bubble">Hi sir</div></div>
+  <div class="appbar"><span class="aarrow">❯</span><div class="afield"><span class="ph">Aa</span></div><span class="acam">☺</span></div>
+  <div class="kb" style="min-height:330px"><div class="mascot">渡</div>
+    <div class="tbar"><span class="pill">中⇄英 ▾</span><div class="tfield">真的是</div><span class="tcancel" style="font-size:13px">✕</span><span class="tconfirm">确定</span></div>
+    <div class="lang">
+      <div class="lhead"><b>语种选择</b><span class="done" onclick="go('ty')">完成</span></div>
+      <div class="lrow"><span>自动检测<small>中文译成英文,其他语言译成中文</small></span></div>
+      <div class="lrow"><span>中英互译</span><span class="ck">✓</span></div>
+      <div class="lrow"><span>中日互译</span></div>
+      <div class="lrow"><span>中韩互译</span></div>
+      <div class="lrow"><span>中法互译</span></div>
+      <div class="lrow"><span>中德互译</span></div>
+      <div class="lrow"><span>中俄互译</span></div>
     </div>
   </div>
-</div>
+</div></div>
 
-<script>
-const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
-let layout='t9',scene=0,toneIdx=1,timer=null;
-const CN='明天中午还是老地方吃面吗 我十二点半到你那边';
-const TONES=['正式','平衡','口语'];
-/* 场景×语气的示例文案(P2三档) */
-const EN=[
- ["Lunch tomorrow, same place? I can be there by 12:30.","Could we confirm tomorrow's lunch at the usual place? I'll plan to arrive by 12:30.","Hi — confirming lunch tomorrow at our usual spot, around 12:30. Looking forward to it."],
- ["Lunch tomorrow still on? Same place, 12:30? 😄","Quick check — are we still on for lunch tomorrow at the usual place, 12:30?","Just confirming tomorrow's lunch at the usual place for 12:30. Please let me know if anything changes."],
- ["Still lunch tomorrow? Usual spot — I'll be there 12:30 😄","Lunch tomorrow at the usual place is still happening, right? I'll get there by 12:30 — could you confirm?","Could you please confirm tomorrow's lunch at the usual place by 12:30? I'd like to finalize the reservation."]
-];
-const EN_VOICE="Lunch tomorrow still on? Same place as usual — I can be there by 12:30. Does that work for you? 😄";
-const SCN=['闲聊','商务','邮件','催单'];
-function k(h,s,f){return `<div class="k${f?' '+f:''}">${h}${s?`<small>${s}</small>`:''}</div>`}
-function renderKbd(){
-  const a=$('#kbdArea');
-  a.innerHTML = layout==='t9'
-   ?`<div class="g-t9">
-      <div class="k punc">,</div>
-      <div class="k dbl"><i>@/.</i><small>1</small></div>
-      <div class="k dbl"><i>ABC</i><small>2</small></div>
-      <div class="k dbl"><i>DEF</i><small>3</small></div>
-      <div class="k rail" role="button" aria-label="删除">⌫</div>
-
-      <div class="k punc">。</div>
-      <div class="k dbl"><i>GHI</i><small>4</small></div>
-      <div class="k dbl"><i>JKL</i><small>5</small></div>
-      <div class="k dbl"><i>MNO</i><small>6</small></div>
-      <div class="k rail" style="grid-row:2/4">换行</div>
-
-      <div class="k punc">?</div>
-      <div class="k dbl"><i>PQRS</i><small>7</small></div>
-      <div class="k dbl"><i>TUV</i><small>8</small></div>
-      <div class="k dbl"><i>WXYZ</i><small>9</small></div>
-
-      <div class="k punc">!</div>
-      <div class="k fn">符</div>
-      <div class="k fn">123</div>
-      <div class="k sp" style="grid-column:4/6"><svg viewBox="0 0 24 24"><rect x="9.6" y="4.2" width="4.8" height="9.6" rx="2.4"/><path d="M6.2 11.4a5.8 5.8 0 0 0 11.6 0M12 17.2v2.4"/></svg>空格</div>
+<!-- ═══ 6 翻译模式(全键盘) ═══ -->
+<div class="phone"><div class="ptitle">06 翻译模式 · 全键盘</div>
+<div class="screen" id="s-qt">
+  <div class="chatpad"><div class="bubble">Hi sir</div></div>
+  <div class="appbar"><span class="aarrow">❯</span><div class="afield"><span class="ph">Aa</span></div><span class="acam">☺</span></div>
+  <div class="kb"><div class="mascot">渡</div>
+    <div class="tbar"><span class="pill">中⇄英 ▾</span><div class="tfield ph">输入要翻译的中/英文</div><span class="tconfirm" style="color:var(--mist)">文A</span><span class="tcancel" onclick="go('qw')">取消</span></div>
+    <div class="toolbar">
+      <div class="tico logo">渡</div><div class="tico">☺⁺</div><div class="tico">🎤</div><div class="tico">⌨</div>
+      <div class="tico tactive" onclick="go('qw')">文A</div><div class="tico">🔍</div><div class="tico">⌄</div>
     </div>
-    <div style="display:grid;grid-template-columns:0.62fr 1fr 1fr 1fr 0.82fr;gap:6px;margin-top:6px">
-      <div></div>
-      <div class="k fn send" style="grid-column:2/5">发送</div>
-      <div class="k rail">0</div>
-    </div>`
-   :`<div class="q10">${'QWERTYUIOP'.split('').map(x=>`<div class="k">${x}</div>`).join('')}</div>
-     <div class="q9" style="margin-top:6px">${'ASDFGHJKL'.split('').map(x=>`<div class="k">${x}</div>`).join('')}</div>
-     <div class="q7" style="margin-top:6px"><div class="k fn">⇧</div>${'ZXCVBNM'.split('').map(x=>`<div class="k">${x}</div>`).join('')}<div class="k fn">⌫</div></div>
-     <div class="q4" style="margin-top:6px">
-       <div class="k fn">123</div><div class="k fn">🌐</div><div class="k sp" style="flex-grow:3"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><rect x="9.6" y="4.2" width="4.8" height="9.6" rx="2.4"/><path d="M6.2 11.4a5.8 5.8 0 0 0 11.6 0"/></svg>空格</div>
-       <div class="k fn send">发送</div>
-     </div>`;
-}
-function comp(html,cls){
-  const c=$('#compTxt');
-  c.className='txt'+(cls?' '+cls:'');
-  c.innerHTML=html;
-  c.classList.remove('fade-swap');void c.offsetWidth;c.classList.add('fade-swap'); /* M4 */
-}
-const PB=$('#prevBar'),PT=$('#prevTxt'),DB=$('#dropBtn');
-let phase='cn';/*cn→preview→en*/
-function hidePrev(){PB.classList.add('hidden');phase='cn';}
-function setState(s){
-  clearTimeout(timer);timer=null;
-  $$('.stbtn').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
-  const mb=$('#minibar');
-  const last=$('#lastMsg');last.classList.add('hidden');
-  const cand=$('#convCand');
-  if(s==='typing'){
-    comp(CN);mb.classList.add('hidden');hidePrev();
-    cand.classList.remove('reconvert');$('#candLbl').textContent='转成英文';
-    cand.querySelector('.c2').innerHTML='<span class="tick">文→A</span> 主入口';
-  }
-  if(s==='converting'){
-    /* v2.8: 中文保留在框内,预览条显示加载态 */
-    comp(CN);mb.classList.add('hidden');PB.classList.remove('hidden');phase='preview';
-    PT.innerHTML='<span class="spinner"></span>&nbsp; AI 翻译中…';
-    DB.style.display='none';
-  }
-  if(s==='done'||s==='voice'){
-    const txt=s==='voice'?EN_VOICE:EN[scene][toneIdx];
-    comp(CN);mb.classList.add('hidden');
-    PT.textContent=txt;DB.style.display='';DB.className='drop';DB.innerHTML='⤓ 放入';
-    PB.classList.remove('hidden');phase='preview';
-  }
-  if(s==='enboxed'){
-    /* 放入后: 输入框=英文,预览条提示可返回,minibar 换档仍在 */
-    comp(EN[scene][toneIdx],'en');phase='en';
-    mb.classList.remove('hidden');
-    PT.textContent=CN;DB.className='drop return';DB.innerHTML='↩ 换回中文';
-    DB.style.display='';PB.classList.remove('hidden');
-    cand.classList.add('reconvert');$('#candLbl').textContent='换档重转';
-    cand.querySelector('.c2').innerHTML='<span class="tick" style="color:var(--blue)">文→A</span> 用当前档位重跑';
-  }
-  if(s==='timeout'){
-    comp(CN);mb.classList.add('hidden');PB.classList.remove('hidden');phase='preview';
-    PT.innerHTML='⏱ 超过 5 秒未完成 — <span style="color:var(--blue);cursor:pointer" onclick="retryConv()">继续等待</span> · <span style="color:var(--red-strong);cursor:pointer" onclick="setState(\'typing\')">取消</span>';
-    DB.style.display='none';
-  }
-  if(s==='asr'){
-    comp(CN);mb.classList.add('hidden');PB.classList.remove('hidden');phase='preview';
-    PT.innerHTML='🎤 没听清 — <span style="color:var(--blue);cursor:pointer" onclick="setState(\'typing\')">改用打字</span> 或再试一次';
-    DB.style.display='none';
-  }
-  if(s==='fail'){
-    comp(CN);mb.classList.add('hidden');PB.classList.remove('hidden');phase='preview';
-    PT.innerHTML='⚠︎ 网络失败,中文原封未动 — 点重试';
-    DB.style.display='none';
-  }
-}
-function retryConv(){setState('converting');timer=setTimeout(()=>setState('done'),900);}
-window.retryConv=retryConv;
-function convert(){
-  setState('converting');
-  timer=setTimeout(()=>setState('done'),1400);
-}
-/* v2.8 核心: 放入↔换回 单键往返 */
-DB.addEventListener('click',()=>{
-  if(phase==='preview'){setState('enboxed');}
-  else if(phase==='en'){setState('done');PT.textContent=EN[scene][toneIdx];DB.className='drop';DB.innerHTML='⤓ 放入';phase='preview';}
-});
-window.setState=setState;
-$('#convCand').addEventListener('click',()=>convert());
-$('#convBtn').addEventListener('click',()=>convert());
-let state='typing';
-$('#micBtn').addEventListener('click',()=>{
-  comp('<span style="color:var(--red-strong)">● </span> 正在聆听…松手结束','ghost');
-  timer=setTimeout(()=>setState('voice'),1500);
-});
-$('#mbCn').addEventListener('click',()=>setState('typing'));
-/* M4: minibar 与三档联动 */
-$('#mbFormal').addEventListener('click',()=>{toneIdx=Math.max(0,toneIdx-1);renderTone();comp(EN[scene][toneIdx],'en')});
-$('#mbCasual').addEventListener('click',()=>{toneIdx=Math.min(2,toneIdx+1);renderTone();comp(EN[scene][toneIdx],'en')});
-$('#logoBtn').addEventListener('click',()=>$('#popover').classList.toggle('hidden'));
-$('#popChips').addEventListener('click',e=>{
-  const c=e.target.closest('.pop-chip');if(!c)return;
-  $$('#popChips .pop-chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
-  scene=[...c.parentNode.children].indexOf(c);
-});
-function renderTone(){$$('#tones .tone').forEach((t,i)=>t.classList.toggle('on',i===toneIdx));}
-$('#tones').addEventListener('click',e=>{
-  const t=e.target.closest('.tone');if(!t)return;
-  toneIdx=[...t.parentNode.children].indexOf(t);renderTone();
-});
-$('#layoutBtn').addEventListener('click',()=>{layout=layout==='t9'?'qw':'t9';renderKbd();});
-/* v2.7: 输入模式(低频配置) */
-let mode='cn';
-$('#modes').addEventListener('click',e=>{
-  const t=e.target.closest('.tone');if(!t)return;
-  $$('#modes .tone').forEach(x=>x.classList.remove('on'));t.classList.add('on');
-  mode=t.nextElementSibling?'en':'cn';
-  if(mode==='en'){comp('EN 纯英文模式:直接输入,不自动转换','ghost');$('#convCand').style.opacity=.35;$('#convCand').style.pointerEvents='none';}
-  else{$('#convCand').style.opacity=1;$('#convCand').style.pointerEvents='';setState('typing');}
-});
-renderKbd();
-</script>
+    <div class="qw">
+      <div class="qrow q1"><div class="qk">Q<small>1</small></div><div class="qk">W<small>2</small></div><div class="qk">E<small>3</small></div><div class="qk">R<small>4</small></div><div class="qk">T<small>5</small></div><div class="qk">Y<small>6</small></div><div class="qk">U<small>7</small></div><div class="qk">I<small>8</small></div><div class="qk">O<small>9</small></div><div class="qk">P<small>0</small></div></div>
+      <div class="qrow q2"><div class="qk">A</div><div class="qk">S</div><div class="qk">D</div><div class="qk">F</div><div class="qk">G</div><div class="qk">H</div><div class="qk">J</div><div class="qk">K</div><div class="qk">L</div></div>
+      <div class="qrow q3"><div class="qk sh">⇧</div><div class="qk">Z</div><div class="qk">X</div><div class="qk">C</div><div class="qk">V</div><div class="qk">B</div><div class="qk">N</div><div class="qk">M</div><div class="qk sh">⌫</div></div>
+      <div class="rowb" style="grid-template-columns:1fr 1fr 2.6fr 1fr 1fr"><div class="k fn">符</div><div class="k fn">123</div><div class="k sp" style="background:var(--key)">空格</div><div class="k fn">中英</div><div class="k fn">换行</div></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ═══ 7 正常全键盘 ═══ -->
+<div class="phone"><div class="ptitle">07 正常全键盘 · 待机</div>
+<div class="screen" id="s-qw">
+  <div class="chatpad"><div class="bubble">Hi sir</div></div>
+  <div class="appbar"><span class="aarrow">❯</span><div class="afield"><span class="ph">Aa</span></div><span class="acam">☺</span></div>
+  <div class="kb"><div class="mascot">渡</div>
+    <div class="toolbar">
+      <div class="tico logo">渡</div><div class="tico">☺⁺</div><div class="tico">🎤</div><div class="tico">⌨</div>
+      <div class="tico" onclick="go('qt')">文A</div><div class="tico">🔍</div><div class="tico">⌄</div>
+    </div>
+    <div class="qw">
+      <div class="qrow q1"><div class="qk">Q<small>1</small></div><div class="qk">W<small>2</small></div><div class="qk">E<small>3</small></div><div class="qk">R<small>4</small></div><div class="qk">T<small>5</small></div><div class="qk">Y<small>6</small></div><div class="qk">U<small>7</small></div><div class="qk">I<small>8</small></div><div class="qk">O<small>9</small></div><div class="qk">P<small>0</small></div></div>
+      <div class="qrow q2"><div class="qk">A</div><div class="qk">S</div><div class="qk">D</div><div class="qk">F</div><div class="qk">G</div><div class="qk">H</div><div class="qk">J</div><div class="qk">K</div><div class="qk">L</div></div>
+      <div class="qrow q3"><div class="qk sh">⇧</div><div class="qk">Z</div><div class="qk">X</div><div class="qk">C</div><div class="qk">V</div><div class="qk">B</div><div class="qk">N</div><div class="qk">M</div><div class="qk sh">⌫</div></div>
+      <div class="rowb" style="grid-template-columns:1fr 1fr 2.6fr 1fr 1fr"><div class="k fn">符</div><div class="k fn">123</div><div class="k sp" style="background:var(--key)">空格</div><div class="k fn">中英</div><div class="k fn">换行</div></div>
+    </div>
+  </div>
+</div></div>
 
 <script>
-const hash = location.hash;
-if(hash==="#converting"){setTimeout(()=>setState("converting"),100)}
-if(hash==="#done"){setTimeout(()=>setState("done"),100)}
-if(hash==="#enboxed"){setTimeout(()=>setState("enboxed"),100)}
-if(hash==="#timeout"){setTimeout(()=>setState("timeout"),100)}
-if(hash==="#asr"){setTimeout(()=>setState("asr"),100)}
-if(hash==="#fail"){setTimeout(()=>setState("fail"),100)}
-if(hash==="#qw"){setTimeout(()=>{layout="qw";renderKbd()},100)}
-if(hash==="#popover"){setTimeout(()=>$("#popover").classList.remove("hidden"),100)}
+function go(s){location.hash=s;render()}
+function render(){
+  var h=(location.hash||'#t9').slice(1);
+  var m={t9:'s-t9',tr:'s-tr',ty:'s-ty',res:'s-res',lg:'s-lg',qt:'s-qt',qw:'s-qw'};
+  document.querySelectorAll('.phone').forEach(function(p){p.style.display='none'});
+  var id=m[h]||'s-t9';
+  document.getElementById(id).parentNode.style.display='block';
+}
+window.onload=render;
 </script>
 </body>
 </html>
